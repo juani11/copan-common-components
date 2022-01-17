@@ -1,0 +1,41 @@
+---
+description: "A Document component."
+labels: ["Form", "Antd"]
+---
+
+import { Document } from "./document";
+
+## React Component para ingresar un documento personal. El componente permite especificar el "Tipo" de documento y su correspondiente valor.
+
+Tipos posibles de documentos:
+-DNI
+-LC
+-CI
+-LE
+-CIPF
+-PASAP
+-CUIT/CUIL
+
+### Uso del componente
+
+```js
+<Document />
+```
+
+### Props
+
+El componente Document, puede recibir 2 props.
+
+1-documentTypeFormItemName
+2-documentFormItemName
+
+Las props se corresponden al 1-atributo "name" del FormItem para el tipo de documento, y 2- al atributo "name" del FormItem del valor del documento.
+Por defecto, al hacer uso del componente, sus valores ya estan establecidos a "documentType" y "document", respectivamente.
+Tiene sentido usar las props, si se va a utilizar el componente Document mas de 1 vez en el mismo formulario.
+Como el componente va estar dentro de un formulario , es necesario que su propiedad "name" sea única
+
+Modify the text to see it change live:
+
+```js live
+<Document />
+```
