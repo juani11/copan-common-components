@@ -1,0 +1,36 @@
+---
+description: "A LocalitySearchBar component."
+labels: ["Form", "Antd"]
+---
+
+import { LocalitySearchBar } from "./locality-searchBar";
+
+## React Component para la carga de Localidad, Partido y Provincia
+
+La carga se realiza en base al código postal de la localidad
+
+### Component usage
+
+Mandar al componente un estado y la funcion setter del estado.
+El componente va almacenar en dicho estado el resultado de la búsqueda que arroje el código postal ingresado
+
+```js
+const [dataForSelectedLocality, setDataForSelectedLocality] = useState(null);
+
+<LocalitySearchBar
+    dataForSelectedLocality={dataForSelectedLocality}
+    setDataForSelectedLocality={setDataForSelectedLocality}
+/>;
+```
+
+### Props
+
+1-dataForSelectedLocality
+2-setDataForSelectedLocality
+
+```js live
+<LocalitySearchBar
+    dataForSelectedLocality={dataForSelectedLocality}
+    setDataForSelectedLocality={setDataForSelectedLocality}
+/>
+```

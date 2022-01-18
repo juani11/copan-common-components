@@ -15,5 +15,11 @@
         "mainFile": "index.js",
         "rootDir": "base-ui/ui/document"
     },
+    "ui/locality-searchbar": {
+        "scope": "copan.base-ui",
+        "version": "0.0.1",
+        "mainFile": "index.js",
+        "rootDir": "base-ui/ui/locality-searchbar"
+    },
     "$schema-version": "14.9.0"
 }
