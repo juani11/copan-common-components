@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { Form,Input, List } from "antd";
+import { Form, Input, List, Tag } from "antd";
 
 import getDataFromZipCode from "./locality-searchBar.service";
+import { rules } from "./locality-searchBar.rules";
+
+import "antd/dist/antd.css";
+import "./locality-searchBar.styles.css";
+
 
 export function LocalitySearchBar({
     dataForSelectedLocality,
@@ -11,115 +16,121 @@ export function LocalitySearchBar({
         value: null,
         searching: false,
         result: [],
-        error: false,
     });
 
     const handleChange = (e) => {
         const { value } = e.target;
-
-        if (value.length === 0) {
-            setZipCodeSearch({
-                ...zipCodeSearch,
-                value,
-                result: [],
-                error: false,
-            });
-            setDataForSelectedLocality(null);
-        } else setZipCodeSearch({ ...zipCodeSearch, value });
-    };
-
-    const handleSearch = async (value) => {
-        console.log(value);
-
-        if (value.length >= 4) {
-            setZipCodeSearch({
-                ...zipCodeSearch,
-                searching: true,
-                error: false,
-            });
-            var response = await getDataFromZipCode(value);
-
-            console.log("Response desde domicilio service: ", response);
-
-            response.ok
-                ? setZipCodeSearch({
-                      ...zipCodeSearch,
-                      result: [...response.items],
-                      searching: false,
-                      error: false,
-                  })
-                : setZipCodeSearch({
-                      ...zipCodeSearch,
-                      result: [],
-                      searching: false,
-                      error: true,
-                      message: response.message,
-                  });
-        }
+        setZipCodeSearch({ ...zipCodeSearch, value });
     };
 
     const handleClickLocality = (selectedItem) => {
         setZipCodeSearch({
             ...zipCodeSearch,
             result: [],
-            error: false,
         });
 
         setDataForSelectedLocality({ ...selectedItem });
     };
 
+    const validateZipCode = (_, value, callback) => {
+        if (value.length === 4 && !dataForSelectedLocality) {
+            //RegExp
+            var result = /^[0-9]*$/.test(value);
+            if (!result) {
+                return callback();
+            }
+
+            setZipCodeSearch({
+                ...zipCodeSearch,
+                searching: true,
+            });
+
+            getDataFromZipCode(value)
+                .then((axiosResponse) => {
+                    const { Items: items, Count: response_count } =
+                        axiosResponse.data;
+                    if (response_count > 0) {
+                        setZipCodeSearch({
+                            ...zipCodeSearch,
+                            result: [...items],
+                            searching: false,
+                        });
+                        return callback();
+                    } else {
+                        setZipCodeSearch({
+                            ...zipCodeSearch,
+                            result: [],
+                            searching: false,
+                        });
+                        return callback("No se encontró el Código postal");
+                    }
+                })
+                .catch((error) => callback(" Se produjo un error al buscar el Código Postal. Inténtelo nuevamente"));
+        } else {
+            setZipCodeSearch({
+                ...zipCodeSearch,
+                result: [],
+            });
+            value.length != 4 && setDataForSelectedLocality(null);
+
+            return callback();
+        }
+    };
+
     return (
-        <div>
+        <React.Fragment>
             <Form.Item
                 label="Código Postal"
                 name="zipCode"
-                rules={[{ required: true, message: "Debe ingresar un CP" }]}
+                rules={[
+                    ...rules,
+                    {
+                        validator: validateZipCode,
+                    },
+                ]}
+                extra={
+                    dataForSelectedLocality && (
+                        <Tag color="geekblue" className="selectedLocality">
+                            {`${dataForSelectedLocality.Localidad}, ${dataForSelectedLocality.Provincia}`}
+                        </Tag>
+                    )
+                }
             >
                 <Input.Search
                     data-testid="search"
-                    placeholder="Ingrese el CP de la Localidad"
-                    onSearch={handleSearch}
-                    enterButton
+                    placeholder="Ingrese el C.P de la localidad"
                     loading={zipCodeSearch.searching}
                     onChange={handleChange}
                     value={zipCodeSearch.value}
+                    allowClear
+                    maxLength={4}
                 />
             </Form.Item>
 
-            {zipCodeSearch.error ? (
-                <div>{zipCodeSearch.message}</div>
-            ) : (
-                zipCodeSearch.result.length > 0 && (
-                    <List
-                        itemLayout="horizontal"
-                        loading={zipCodeSearch.searching}
-                        dataSource={zipCodeSearch.result}
-                        renderItem={(item) => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    title={
-                                        <a
-                                            onClick={() =>
-                                                handleClickLocality(item)
-                                            }
-                                        >
-                                            {item.Localidad}
-                                        </a>
-                                    }
-                                    description={`Partido: ${item.Partido}, Provincia: ${item.Provincia}`}
-                                />
-                            </List.Item>
-                        )}
-                    />
-                )
+            {zipCodeSearch.result.length > 0 && (
+                <List
+                    itemLayout="horizontal"
+                    loading={zipCodeSearch.searching}
+                    dataSource={zipCodeSearch.result}
+                    pagination={{pageSize: 5}}
+                    renderItem={(item) => (
+                        <List.Item>
+                            <List.Item.Meta
+                                title={
+                                    <a
+                                        onClick={() =>
+                                            handleClickLocality(item)
+                                        }
+                                    >
+                                        {item.Localidad}
+                                    </a>
+                                }
+                                description={`${item.Partido}, ${item.Provincia}`}
+                            />
+                        </List.Item>
+                    )}
+                />
             )}
-
-            {dataForSelectedLocality && (
-                <p>
-                    {dataForSelectedLocality.Provincia +
-                        dataForSelectedLocality.Localidad}
-                </p>
-            )}
-        </div>
+        </React.Fragment>
     );
 }
