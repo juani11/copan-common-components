@@ -25,8 +25,13 @@ const [dataForSelectedLocality, setDataForSelectedLocality] = useState(null);
 
 ### Props
 
-1-dataForSelectedLocality
-2-setDataForSelectedLocality
+1-formItemName (opcional)
+2-dataForSelectedLocality
+3-setDataForSelectedLocality
+
+1. atributo "name" del FormItem del input de código postal. Por defecto, al hacer uso del componente, su valor ya esta establecido a "zipCode"
+2. estado donde se va almacenar los datos de la localidad seleccionada
+3. funcion setter del estado.
 
 ```js live
 <LocalitySearchBar

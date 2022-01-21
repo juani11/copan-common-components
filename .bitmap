@@ -17,7 +17,7 @@
     },
     "ui/locality-searchbar": {
         "scope": "copan.base-ui",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "mainFile": "index.js",
         "rootDir": "base-ui/ui/locality-searchbar"
     },

@@ -4,11 +4,15 @@ import { Form, Input, List, Tag } from "antd";
 import getDataFromZipCode from "./locality-searchBar.service";
 import { rules } from "./locality-searchBar.rules";
 
+import locale from 'antd/lib/date-picker/locale/es_ES';
+
 import "antd/dist/antd.css";
 import "./locality-searchBar.styles.css";
 
 
 export function LocalitySearchBar({
+    formItemName="zipCode", 
+    disabled,
     dataForSelectedLocality,
     setDataForSelectedLocality,
 }) {
@@ -81,7 +85,7 @@ export function LocalitySearchBar({
         <React.Fragment>
             <Form.Item
                 label="Código Postal"
-                name="zipCode"
+                name={formItemName}
                 rules={[
                     ...rules,
                     {
@@ -104,6 +108,7 @@ export function LocalitySearchBar({
                     value={zipCodeSearch.value}
                     allowClear
                     maxLength={4}
+                    disabled={disabled}
                 />
             </Form.Item>
 
@@ -112,7 +117,7 @@ export function LocalitySearchBar({
                     itemLayout="horizontal"
                     loading={zipCodeSearch.searching}
                     dataSource={zipCodeSearch.result}
-                    pagination={{pageSize: 5}}
+                    pagination={{pageSize: 5,total:zipCodeSearch.result.length,size:"small",locale,hideOnSinglePage:true}}
                     renderItem={(item) => (
                         <List.Item>
                             <List.Item.Meta
